@@ -1,1 +1,7 @@
 dbTable is a innovative library built on the Python SQLite Library that allows you to manipulate views on tables in Databases, select data from them, and modify them in many ways. This library abstracts out all SQL queries with native Python syntax, and has built-in lazy computation as well. Furthermore, this library provides an interface to load tables from SQLite into in-memory table structures like Pandas DataFrames or Numpy Array for further analysis.
+
+Getting started is very simple:
+
+Load a new database with
+
+db = Database('database.db'),
