@@ -1,0 +1,6 @@
+numpy
+tabulate
+
+[dev]
+datascience
+pandas
