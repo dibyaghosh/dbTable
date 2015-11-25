@@ -1,6 +1,6 @@
 Metadata-Version: 1.1
 Name: dbTable
-Version: 0.0.1
+Version: 0.0.2
 Summary: A library to provide Table data constructs over SQLite Databases
 Home-page: https://github.com/dibyaghosh/dbTable
 Author: Dibya Ghosh
