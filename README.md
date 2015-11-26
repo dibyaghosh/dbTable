@@ -6,12 +6,22 @@ Check out the full documentation at [DOCUMENTATION](http://dibya.xyz/dbTable/doc
 
 Quickstart Guide:
 
-1) Make sure you have numpy and tabulate installed 
+1) Installation 
+
+Make sure you have numpy and tabulate installed 
 
 ```
 pip install numpy
 pip install tabulate
 ```
+
+Install dbTable through PyPI 
+```
+pip install dbTable
+```
+
+You can also install the built distribution in the dist/ folder, or for portable cases, just download the dbTable.py file, and place it in your project folder 
+
 
 2) Load dbTable into your interpreter/project
 
