@@ -18,7 +18,7 @@ import dbTable
 3) Make a connection to a database
 
 ```
-db = Database('test.db') # Replace with your database or use ()
+db = Database('test.db') # Replace with your database or use ":memory:" to load an in-memory database
 ```
 
 4) Select a table:
@@ -26,3 +26,15 @@ db = Database('test.db') # Replace with your database or use ()
 ```
 table1 = db['table1'] 
 ````
+
+Have fun!
+
+Here's a sampling of modifications and filters you can do with dbTable
+
+```
+table2 = table1.select(['col1','col2']) # Selecting columns from database
+table3 = table2.where(table2['col1']> 20) # Filters
+table4 = table3.sort('col2',descending=False) # Sort data
+table4['col2'] = table4['col1']*10 # Modify columns
+table4['col3'] = table4['col1']+table4['col2']
+table4['col3'] *= 2
