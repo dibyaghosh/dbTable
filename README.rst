@@ -15,35 +15,61 @@ Quickstart Guide:
 
 1) Installation
 
-Install dbTable through PyPI
+Make sure you have numpy and tabulate installed
+
+::
+
+    pip install numpy
+    pip install tabulate
+
+Install dbTable through PyPI (This’ll automatically install numpy and
+tabulate)
 
 ::
 
     pip install dbTable
 
-You can also download source code and prebuilt distributions from the Github repository. For portable cases, just download the dbTable.py file, and place it in your project folder
+You can also install the built distribution in the dist/ folder, or for
+portable cases, just download the dbTable.py file, and place it in your
+project folder
 
 2) Load dbTable into your interpreter/project
 
-::
+.. code:: python
 
     import dbTable
 
 3) Make a connection to a database
 
-::
+.. code:: python
 
     db = Database('test.db') # Replace with your database or use ":memory:" to load an in-memory database
 
 4) Select a table:
 
-::
+.. code:: python
 
     table1 = db['table1'] 
 
+5) Exporting / Importing
+
+To convert a dbTable to any other form, use:
+
+.. code:: python
+
+    new_df = db['table1'].to_df() # Returns a Pandas DataFrame Object
+    new_table = db['table1'].to_table() # Returns a UCB Datascience Table 
+    new_ndarray = db['table1'].to_numpy_array() # Returns a Numpy Array
+
+To save a DataFrame, UCB Table, or Numpy Array, use:
+
+.. code:: python
+
+    db.store_table(new_df,'newtablename')
+
 Here’s a sampling of modifications and filters you can do with dbTable
 
-::
+.. code:: python
 
     table2 = table1.select(['col1','col2']) # Selecting columns from database
     table3 = table2.where(table2['col1']> 20) # Filters
