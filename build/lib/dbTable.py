@@ -1,18 +1,27 @@
 import sqlite3 as sql
 import numpy   as np
-from tabulate import tabulate
+try:
+    from tabulate import tabulate
+    _tab = True
+except:
+    print("No Support for Pretty Printing dbTables")
+    _tab = False
 try:
     from datascience import Table
+    _berktb = True
 except ImportError:
     print("No support for UCB-Tables")
+    _berktb = False
 try:
     import pandas as pd
+    _df = True
 except ImportError:
+    _df = False
     print("No support for Pandas DataFrames")
 
 _sqltypes = {"REAL":float,"INTEGER":int,"TEXT":str,"INT":int,'':int}
 _pytypes = {float:"REAL",int:"INTEGER",str:"TEXT"}
-_numpytypes = {np.int_:"INTEGER",np.float_:"REAL",str:"TEXT",np.bool_:"INTEGER"}
+_numpytypes = {np.int_:"INTEGER",np.float_:"REAL",np.str_:"TEXT",np.bool_:"INTEGER",str:"TEXT"}
 
 ##########################################################
 #
@@ -63,35 +72,50 @@ class Database:
         self.tables = self.__get_tables()
         self.name = db_name
     
-    def create_table(self,name,table,columns):
+    def store_table(self,table,name,columns=None):
         """
-        Creates a new table in the database from a numpy array and list of column names
+        Creates a new table in the database from a given data structure.
+        Currently supports UC Berkeley DS Tables, Pandas DataFrames, and Numpy Arrays
         
-        Parameters:     
+        Parameters: 
+            table -- the table to be stored as data   
             name -- name of the new table to be created   
-            table -- the NumPY 2D Array to be stored as data   
-            columns -- A list of column labels for data   
+            columns -- A list of column labels (if an ndarray is passed in)  
 
             >>> a = np.array([[1,2],[3,4]])
             >>> a
             1 2
             3 4
-            >>> db.create_table('numbers',a,['odds','evens'])
+            >>> db.store_table(a,'numbers',['odds','evens'])
 
         """
+        if _berktb and isinstance(table,Table):
+            self.__create_table(name,table.rows,table.column_labels)
+        if _df and isinstance(table,pd.DataFrame):
+            self.__create_table_np(name,table.iterrows(),list(table))
+        if isinstance(table,np.ndarray):
+            if columns:
+                self.__create_table(name,table,columns)
+            else:
+                raise TypeError("You need to pass in column names")
+        self.commit()
+
+    def __create_table(self,name,table,columns):
+        
         if len(table[0]) != len(columns):
             print("Column Mismatch")
             return
         cols = []
-        for v,c in zip(table[0],columns):
+        for v,c in zip(tuple(table[0]),columns):
             if type(v) in _numpytypes:
                 cols.append("%s %s"%(c,_numpytypes[type(v)]))
         expr = "CREATE TABLE %s( %s )"%(name,", ".join(cols))
         self.c.execute(expr)
         insert_expr = "INSERT INTO %s VALUES( %s ) "%(name," ,".join(["?"]*len(cols)))
         for i in table:
+            i = np.array(i).tolist()
             self.c.execute(insert_expr,i)
-        self[name] = dbTable(self,name,self.get_table_columns(name))
+        self[name] = dbTable(self,name,self.__get_table_columns(name))
 
     def drop_table(self,table):
         """
@@ -127,7 +151,7 @@ class Database:
         expr = "SELECT * from sqlite_master"
         self.c.execute(expr)
         table_names = [i[1] for i in self.c.fetchall() if i[0]=='table']
-        return {name: dbTable(self,name,self.get_table_columns(name)) for name in table_names}
+        return {name: dbTable(self,name,self.__get_table_columns(name)) for name in table_names}
 
     def __get_table_columns(self,table_name):
         expr = "PRAGMA table_info(%s)"%table_name
@@ -469,10 +493,12 @@ class dbTable:
 
     def _print(self,num_rows=10):
         expr = self._formulate({'limit':num_rows})
-        print(expr)
         data  = self.db.c.execute(expr).fetchall()
         data.insert(0, list(self.columns.keys()))
-        return tabulate(data)
+        if _tab:
+            return tabulate(data)
+        else:
+            return "\n".join(["\t".join(map(str,row)) for row in data])
     ###############################
     #
     #   EXPORTING TO OTHER FORMATS
@@ -492,6 +518,9 @@ class dbTable:
         Loads the table into memory, and converts it into a UCB DataScience Table
         Check out http://data8.org for more information
         """
+        if not _berktb:
+            print("You don't have the Berkeley DataScience library installed")
+            return
         if not data:
             data = self.db.c.execute(self._formulate()).fetchall()
         cols = list(self.columns.keys())
@@ -502,6 +531,9 @@ class dbTable:
         """
         Loads the table into memory, and converts it into a Pandas DataFrame
         """
+        if not _df:
+            print("You don't have the Pandas library installed")
+            return
         if not data:
             data = self.db.c.execute(self._formulate()).fetchall()
         cols = list(self.columns.keys())
