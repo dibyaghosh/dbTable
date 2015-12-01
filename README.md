@@ -41,6 +41,21 @@ db = Database('test.db') # Replace with your database or use ":memory:" to load 
 table1 = db['table1'] 
 ````
 
+5) Exporting / Importing
+
+To convert a dbTable to any other form, use:
+
+```python
+new_df = db['table1'].to_df() # Returns a Pandas DataFrame Object
+new_table = db['table1'].to_table() # Returns a UCB Datascience Table 
+new_ndarray = db['table1'].to_numpy_array() # Returns a Numpy Array
+```
+
+To save a DataFrame, UCB Table, or Numpy Array, use:
+
+```python
+db.store_table(new_df,'newtablename')
+```
 Here's a sampling of modifications and filters you can do with dbTable
 
 ```
