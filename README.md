@@ -15,7 +15,7 @@ pip install numpy
 pip install tabulate
 ```
 
-Install dbTable through PyPI 
+Install dbTable through PyPI (This'll automatically install numpy and tabulate)
 ```
 pip install dbTable
 ```
@@ -25,19 +25,19 @@ You can also install the built distribution in the dist/ folder, or for portable
 
 2) Load dbTable into your interpreter/project
 
-```
+```python
 import dbTable
 ```
 
 3) Make a connection to a database
 
-```
+```python
 db = Database('test.db') # Replace with your database or use ":memory:" to load an in-memory database
 ```
 
 4) Select a table:
 
-```
+```python
 table1 = db['table1'] 
 ````
 
@@ -58,7 +58,7 @@ db.store_table(new_df,'newtablename')
 ```
 Here's a sampling of modifications and filters you can do with dbTable
 
-```
+```python
 table2 = table1.select(['col1','col2']) # Selecting columns from database
 table3 = table2.where(table2['col1']> 20) # Filters
 table4 = table3.sort('col2',descending=False) # Sort data
